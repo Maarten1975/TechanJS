@@ -1,0 +1,15 @@
+# (uncomment to add a dependency)
+# dependencies:
+#  - name:
+#    version:
+#    src:
+#    script:
+#    stylesheet:
+
+dependencies:
+  - name: techan
+    version: 0.5.0
+    src: htmlwidgets/lib/techan-0.5.0
+    script:
+      - plugins/d3.min.js
+      - techan-0.5.0.min.js

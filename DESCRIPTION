@@ -1,0 +1,10 @@
+Package: TechanJS
+Type: Package
+Title: R bindings to TechanJS
+Version: 0.0.1
+Author: Alexander Gedranovich <gedranovich@gmail.com>
+Maintainer: Alexander Gedranovich <gedranovich@gmail.com>
+Description: R bindings to TechanJS
+Depends: R (>= 3.2.1), htmltools, htmlwidgets, jsonlite, magrittr, stringi, dplyr
+License: MIT
+LazyData: true
