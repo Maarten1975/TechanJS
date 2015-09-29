@@ -2,5 +2,6 @@
 
 export(TechanJS)
 export(TechanJSOutput)
+export(TechanJS_html)
+export(dateToJS)
 export(renderTechanJS)
-import(htmlwidgets)

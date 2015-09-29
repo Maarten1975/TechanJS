@@ -5,6 +5,6 @@ Version: 0.0.1
 Author: Alexander Gedranovich <gedranovich@gmail.com>
 Maintainer: Alexander Gedranovich <gedranovich@gmail.com>
 Description: R bindings to TechanJS
-Depends: R (>= 3.2.1), htmltools, htmlwidgets, jsonlite, magrittr, stringi, dplyr
+Depends: R (>= 3.2.1), htmltools, htmlwidgets, jsonlite, magrittr, stringi, dplyr, TTR, xts
 License: MIT
 LazyData: true

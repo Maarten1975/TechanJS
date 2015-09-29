@@ -1,10 +1,22 @@
 #' @export
-TechanJS <- function(filename, width = NULL, height = NULL) {
-
-  TechanJSEnv$filename <- normalizePath(filename)
+TechanJS <- function(filename,
+                     type = "candlestick",
+                     title = "",
+                     indicators = c("MACD", "RSI"),
+                     trendlines = NULL,
+                     annotations = NULL,
+                     width = NULL, height = NULL) {
 
   # forward options using x
-  x = list()
+  x = list(type = type,
+           title = title,
+           indicators = indicators,
+           trendlines = trendlines,
+           width = width,
+           height = height)
+
+  TechanJSEnv$filename <- normalizePath(filename)
+  TechanJSEnv$x <- x
 
   # create widget
   htmlwidgets::createWidget(
@@ -23,7 +35,7 @@ TechanJS_html <- function(id, style, class, ...) {
   # Gets JSON from file
   .data <- TechanJSEnv$filename
 
-  # Creates HEAD script
+# Creates HEAD script-----------------------------------------------------------
   .head <- "<style>
 
   body {
@@ -72,61 +84,61 @@ TechanJS_html <- function(id, style, class, ...) {
   fill: #DDDDDD;
   }
 
-  .indicator-plot path.line {
-  fill: none;
-  stroke-width: 1;
-  }
+  //.indicator-plot path.line {
+  //fill: none;
+  //stroke-width: 1;
+  //}
 
-  .ma-0 path.line {
-  stroke: #1f77b4;
-  }
+  //.ma-0 path.line {
+  //stroke: #1f77b4;
+  //}
 
-  .ma-1 path.line {
-  stroke: #aec7e8;
-  }
+  //.ma-1 path.line {
+  //stroke: #aec7e8;
+  //}
 
-  .ma-2 path.line {
-  stroke: #ff7f0e;
-  }
+  //.ma-2 path.line {
+  //stroke: #ff7f0e;
+  //}
 
-  button {
-  position: absolute;
-  right: 110px;
-  top: 25px;
-  }
+  //button {
+  //position: absolute;
+  //right: 110px;
+  //top: 25px;
+  //}
 
-  path.macd {
-  stroke: #0000AA;
-  }
+  //path.macd {
+  //stroke: #0000AA;
+  //}
 
-  path.signal {
-  stroke: #FF9999;
-  }
+  //path.signal {
+  //stroke: #FF9999;
+  //}
 
-  path.zero {
-  stroke: #BBBBBB;
-  stroke-dasharray: 0;
-  stroke-opacity: 0.5;
-  }
+  //path.zero {
+  //stroke: #BBBBBB;
+  //stroke-dasharray: 0;
+  //stroke-opacity: 0.5;
+  //}
 
-  path.difference {
-  fill: #BBBBBB;
-  opacity: 0.5;
-  }
+  //path.difference {
+  //fill: #BBBBBB;
+  //opacity: 0.5;
+  //}
 
-  path.rsi {
-  stroke: #000000;
-  }
+  //path.rsi {
+  //stroke: #000000;
+  //}
 
-  path.overbought, path.oversold {
-  stroke: #FF9999;
-  stroke-dasharray: 5, 5;
-  }
+  //path.overbought, path.oversold {
+  //stroke: #FF9999;
+  //stroke-dasharray: 5, 5;
+  //}
 
-  path.middle, path.zero {
-  stroke: #BBBBBB;
-  stroke-dasharray: 5, 5;
-  }
+  //path.middle, path.zero {
+  //stroke: #BBBBBB;
+  //stroke-dasharray: 5, 5;
+  //}
 
   .analysis path, .analysis circle {
   stroke: blue;
@@ -167,10 +179,10 @@ TechanJS_html <- function(id, style, class, ...) {
   stroke-dasharray: 2, 2;
   }
 
-  .supstances .interaction path {
-  pointer-events: all;
-  cursor: ns-resize;
-  }
+  //.supstances .interaction path {
+  //pointer-events: all;
+  //cursor: ns-resize;
+  //}
 
   .mouseover .supstance path {
   stroke-width: 1.5;
@@ -195,12 +207,13 @@ TechanJS_html <- function(id, style, class, ...) {
 
   </style>"
 
+# Body script-------------------------------------------------------------------
   .script <- '
     var dim = {
-        width: 960, height: 500,
-  margin: { top: 20, right: 50, bottom: 30, left: 50 },
-  ohlc: { height: 305 },
-  indicator: { height: 65, padding: 5 }
+        width: <WIDTH>, height: <HEIGHT>,
+  margin: { top: 20, right: 50, bottom: 50, left: 50 },
+  ohlc: { height: <OHLC_HEIGHT> },
+  indicator: { height: 0, padding: 10 }
 };
   dim.plot = {
   width: dim.width - dim.margin.left - dim.margin.right,
@@ -234,17 +247,17 @@ TechanJS_html <- function(id, style, class, ...) {
   .xScale(x)
   .yScale(y);
 
-  var sma0 = techan.plot.sma()
-  .xScale(x)
-  .yScale(y);
+  //var sma0 = techan.plot.sma()
+  //.xScale(x)
+  //.yScale(y);
 
-  var sma1 = techan.plot.sma()
-  .xScale(x)
-  .yScale(y);
+  //var sma1 = techan.plot.sma()
+  //.xScale(x)
+  //.yScale(y);
 
-  var ema2 = techan.plot.ema()
-  .xScale(x)
-  .yScale(y);
+  //var ema2 = techan.plot.ema()
+  //.xScale(x)
+  //.yScale(y);
 
   var volume = techan.plot.volume()
   .accessor(candlestick.accessor())   // Set the accessor to a ohlc accessor so we get highlighted bars
@@ -252,12 +265,12 @@ TechanJS_html <- function(id, style, class, ...) {
   .yScale(yVolume);
 
   var trendline = techan.plot.trendline()
-  .xScale(x)
-  .yScale(y);
+   .xScale(x)
+   .yScale(y);
 
   var supstance = techan.plot.supstance()
-  .xScale(x)
-  .yScale(y);
+   .xScale(x)
+   .yScale(y);
 
   var xAxis = d3.svg.axis()
   .scale(x)
@@ -303,7 +316,7 @@ TechanJS_html <- function(id, style, class, ...) {
   .width(35);
 
   var macdScale = d3.scale.linear()
-  .range([indicatorTop(0)+dim.indicator.height, indicatorTop(0)]);
+   .range([indicatorTop(0)+dim.indicator.height, indicatorTop(0)]);
 
   var rsiScale = macdScale.copy()
   .range([indicatorTop(1)+dim.indicator.height, indicatorTop(1)]);
@@ -319,8 +332,8 @@ TechanJS_html <- function(id, style, class, ...) {
 
   var macdAnnotation = techan.plot.axisannotation()
   .axis(macdAxis)
-  .format(d3.format(",.2fs"))
-  .translate([x(1), 0]);
+  .format(d3.format(",.2fs"));
+  //.translate([x(1), 0]);
 
   var macdAxisLeft = d3.svg.axis()
   .scale(macdScale)
@@ -342,8 +355,8 @@ TechanJS_html <- function(id, style, class, ...) {
 
   var rsiAnnotation = techan.plot.axisannotation()
   .axis(rsiAxis)
-  .format(d3.format(",.2fs"))
-  .translate([x(1), 0]);
+  .format(d3.format(",.2fs"));
+  //.translate([x(1), 0]);
 
   var rsiAxisLeft = d3.svg.axis()
   .scale(rsiScale)
@@ -405,7 +418,7 @@ TechanJS_html <- function(id, style, class, ...) {
   svg.append("text")
   .attr("class", "symbol")
   .attr("x", 20)
-  .text("Facebook, Inc. (FB)");
+  .text("<TITLE>");
 
   svg.append("g")
   .attr("class", "x axis")
@@ -483,9 +496,9 @@ TechanJS_html <- function(id, style, class, ...) {
   svg.append("g")
   .attr("class", "trendlines analysis")
   .attr("clip-path", "url(#ohlcClip)");
-  svg.append("g")
-  .attr("class", "supstances analysis")
-  .attr("clip-path", "url(#ohlcClip)");
+  //svg.append("g")
+  //.attr("class", "supstances analysis")
+  //.attr("clip-path", "url(#ohlcClip)");
 
   d3.select("button").on("click", reset);
 
@@ -508,35 +521,29 @@ TechanJS_html <- function(id, style, class, ...) {
   yPercent.domain(techan.scale.plot.percent(y, accessor(data[indicatorPreRoll])).domain());
   yVolume.domain(techan.scale.plot.volume(data).domain());
 
-  var trendlineData = [
-  { start: { date: new Date(2014, 2, 11), value: 72.50 }, end: { date: new Date(2014, 5, 9), value: 63.34 } },
-  { start: { date: new Date(2013, 10, 21), value: 43 }, end: { date: new Date(2014, 2, 17), value: 70.50 } }
-  ];
+  var trendlineData = <TRENDLINES>;
 
-  var supstanceData = [
-  { start: new Date(2014, 2, 11), end: new Date(2014, 5, 9), value: 63.64 },
-  { start: new Date(2013, 10, 21), end: new Date(2014, 2, 17), value: 55.50 }
-  ];
+  //var supstanceData = <TRENDLINES>;
 
   var macdData = techan.indicator.macd()(data);
-  macdScale.domain(techan.scale.plot.macd(macdData).domain());
+  //macdScale.domain(techan.scale.plot.macd(macdData).domain());
   var rsiData = techan.indicator.rsi()(data);
-  rsiScale.domain(techan.scale.plot.rsi(rsiData).domain());
+  //rsiScale.domain(techan.scale.plot.rsi(rsiData).domain());
 
   svg.select("g.candlestick").datum(data).call(candlestick);
   svg.select("g.close.annotation").datum([data[data.length-1]]).call(closeAnnotation);
   svg.select("g.volume").datum(data).call(volume);
-  svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
-  svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).call(sma1);
-  svg.select("g.ema.ma-2").datum(techan.indicator.ema().period(50)(data)).call(ema2);
-  svg.select("g.macd .indicator-plot").datum(macdData).call(macd);
-  svg.select("g.rsi .indicator-plot").datum(rsiData).call(rsi);
+  //svg.select("g.sma.ma-0").datum(techan.indicator.sma().period(10)(data)).call(sma0);
+  //svg.select("g.sma.ma-1").datum(techan.indicator.sma().period(20)(data)).call(sma1);
+  //svg.select("g.ema.ma-2").datum(techan.indicator.ema().period(50)(data)).call(ema2);
+  //svg.select("g.macd .indicator-plot").datum(macdData).call(macd);
+  //svg.select("g.rsi .indicator-plot").datum(rsiData).call(rsi);
 
   svg.select("g.crosshair.ohlc").call(ohlcCrosshair).call(zoom);
-  svg.select("g.crosshair.macd").call(macdCrosshair).call(zoom);
-  svg.select("g.crosshair.rsi").call(rsiCrosshair).call(zoom);
+  //svg.select("g.crosshair.macd").call(macdCrosshair).call(zoom);
+  //svg.select("g.crosshair.rsi").call(rsiCrosshair).call(zoom);
   svg.select("g.trendlines").datum(trendlineData).call(trendline).call(trendline.drag);
-  svg.select("g.supstances").datum(supstanceData).call(supstance).call(supstance.drag);
+  //svg.select("g.supstances").datum(supstanceData).call(supstance).call(supstance.drag);
 
   var zoomable = x.zoomable();
   zoomable.domain([indicatorPreRoll, data.length]); // Zoom in a little to hide indicator preroll
@@ -561,36 +568,56 @@ TechanJS_html <- function(id, style, class, ...) {
   svg.select("g.ohlc .axis").call(yAxis);
   svg.select("g.volume.axis").call(volumeAxis);
   svg.select("g.percent.axis").call(percentAxis);
-  svg.select("g.macd .axis.right").call(macdAxis);
-  svg.select("g.rsi .axis.right").call(rsiAxis);
-  svg.select("g.macd .axis.left").call(macdAxisLeft);
-  svg.select("g.rsi .axis.left").call(rsiAxisLeft);
+  //svg.select("g.macd .axis.right").call(macdAxis);
+  //svg.select("g.rsi .axis.right").call(rsiAxis);
+  //svg.select("g.macd .axis.left").call(macdAxisLeft);
+  //svg.select("g.rsi .axis.left").call(rsiAxisLeft);
 
   // We know the data does not change, a simple refresh that does not perform data joins will suffice.
   svg.select("g.candlestick").call(candlestick.refresh);
   svg.select("g.close.annotation").call(closeAnnotation.refresh);
   svg.select("g.volume").call(volume.refresh);
-  svg.select("g .sma.ma-0").call(sma0.refresh);
-  svg.select("g .sma.ma-1").call(sma1.refresh);
-  svg.select("g .ema.ma-2").call(ema2.refresh);
-  svg.select("g.macd .indicator-plot").call(macd.refresh);
-  svg.select("g.rsi .indicator-plot").call(rsi.refresh);
+  //svg.select("g .sma.ma-0").call(sma0.refresh);
+  //svg.select("g .sma.ma-1").call(sma1.refresh);
+  //svg.select("g .ema.ma-2").call(ema2.refresh);
+  //svg.select("g.macd .indicator-plot").call(macd.refresh);
+  //svg.select("g.rsi .indicator-plot").call(rsi.refresh);
   svg.select("g.crosshair.ohlc").call(ohlcCrosshair.refresh);
-  svg.select("g.crosshair.macd").call(macdCrosshair.refresh);
-  svg.select("g.crosshair.rsi").call(rsiCrosshair.refresh);
+  //svg.select("g.crosshair.macd").call(macdCrosshair.refresh);
+  //svg.select("g.crosshair.rsi").call(rsiCrosshair.refresh);
   svg.select("g.trendlines").call(trendline.refresh);
-  svg.select("g.supstances").call(supstance.refresh);
+  //svg.select("g.supstances").call(supstance.refresh);
   }
   '
 
-  .script <- stri_replace_last_fixed(.script,
-                                     pattern = "%s",
-                                     replacement = readLines(.data) %>% stri_c(collapse = "\\n"))
+# Imputing----------------------------------------------------------------------
+  impute <- function(txt, pattern, replacement) {
+    stri_replace_all_fixed(txt, pattern, replacement)
+  }
+
+  .script <- impute(.script, pattern = "<WIDTH>",
+                    replacement = ifelse(is.null(TechanJSEnv$x$width), 960, TechanJSEnv$x$width))
+
+  .script <- impute(.script, pattern = "<HEIGHT>",
+                    replacement = ifelse(is.null(TechanJSEnv$x$height), 500, TechanJSEnv$x$height))
+
+  .script <- impute(.script, pattern = "<OHLC_HEIGHT>",
+                    replacement = ifelse(is.null(TechanJSEnv$x$height), 420, TechanJSEnv$x$height - 80))
+
+  .script <- impute(.script, pattern = "<TITLE>",
+                    replacement = TechanJSEnv$x$title)
+
+  .script <- impute(.script, pattern = "<TRENDLINES>",
+                    replacement = TechanJSEnv$x$trendlines %>% toJSON(auto_unbox = TRUE) %>%
+                      stri_replace_all_fixed('"', ''))
+
+  .script <- impute(.script, pattern = "%s",
+                    replacement = readLines(.data) %>% stri_c(collapse = "\\n"))
 
   # Returns list of tags
   tagList(
     tags$head(HTML(.head)),
-    tags$button("Reset"),
+    #tags$button("Reset"),
     tags$script(HTML(.script))
   )
 }
@@ -598,7 +625,8 @@ TechanJS_html <- function(id, style, class, ...) {
 #' Widget output function for use in Shiny
 #'
 #' @export
-TechanJSOutput <- function(outputId, width = '100%', height = '400px'){
+TechanJSOutput <- function(outputId, width = '100%', height = '400px') {
+
   shinyWidgetOutput(outputId, 'rTechanJS', width, height, package = 'TechanJS')
 }
 
